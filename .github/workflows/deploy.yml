@@ -1,3 +1,5 @@
+# The idea behind is we run our jobs inside a docker containers.
+# note that in most cases, we run the jobs inside ubuntu-latest machine provided by Github and nothing wrong with it
 name: Deployment (Container)
 on:
   push:
@@ -10,7 +12,10 @@ env:
 jobs:
   test:
     environment: testing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # this runner machine will host the docker image
+    # and the steps running in the image will not have direct access to the machine, and not have direct access to a tool that made available by that machine
+    container:  # to define the value for "container" key, you need to specify the name of the image which you want to use. (this case, image name is "node:16")
+      image: node:16
     env:
       MONGODB_CONNECTION_PROTOCOL: mongodb+srv
       MONGODB_CLUSTER_ADDRESS: cluster0.pvdzsfu.mongodb.net
@@ -19,9 +24,9 @@ jobs:
       PORT: 8080
     steps:
       - name: Get Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ env.CACHE_KEY }}-${{ hashFiles('**/package-lock.json') }}
