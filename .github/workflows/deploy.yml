@@ -16,17 +16,22 @@ jobs:
     environment: testing
     runs-on: ubuntu-latest # this runner machine will host the docker image
     # and the steps running in the image will not have direct access to the machine, and not have direct access to a tool that made available by that machine
-    container:  # to define the value for "container" key, you need to specify the name of the image which you want to use. (this case, image name is "node:16")
-      image: node:16
+    # If the job is run inside a container, it will automatically create a network between this container with services containers (this case is mongodb). 
+    # container:  # to define the value for "container" key, you need to specify the name of the image which you want to use. (this case, image name is "node:16")
+    #   image: node:16
     env:
       MONGODB_CONNECTION_PROTOCOL: mongodb
-      MONGODB_CLUSTER_ADDRESS: mongodb # this is the name "mongodb" in services
+      # MONGODB_CLUSTER_ADDRESS: mongodb # this is the name "mongodb" in services
+      MONGODB_CLUSTER_ADDRESS: 127.0.0.1:27017 #27017 is a default port of mongodb cluster.
+      # If the job isn't run inside a docker container, it will not create a network to connect to services containers.
       MONGODB_USERNAME: root
       MONGODB_PASSWORD: example
       PORT: 8080
     services: 
       mongodb: # the name here is totally up to you
         image: mongo
+        ports:
+          - 27017:27017
         env: 
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: example
