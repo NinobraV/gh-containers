@@ -1,5 +1,7 @@
 # The idea behind is we run our jobs inside a docker containers.
 # note that in most cases, we run the jobs inside ubuntu-latest machine provided by Github and nothing wrong with it
+
+# all the steps of job would be the same result, instead of running job directly on ubuntu-latest machine, we run on docker container.
 name: Deployment (Container)
 on:
   push:
@@ -17,11 +19,17 @@ jobs:
     container:  # to define the value for "container" key, you need to specify the name of the image which you want to use. (this case, image name is "node:16")
       image: node:16
     env:
-      MONGODB_CONNECTION_PROTOCOL: mongodb+srv
-      MONGODB_CLUSTER_ADDRESS: cluster0.pvdzsfu.mongodb.net
-      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
-      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+      MONGODB_CONNECTION_PROTOCOL: mongodb
+      MONGODB_CLUSTER_ADDRESS: mongodb # this is the name "mongodb" in services
+      MONGODB_USERNAME: root
+      MONGODB_PASSWORD: example
       PORT: 8080
+    services: 
+      mongodb: # the name here is totally up to you
+        image: mongo
+        env: 
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: example
     steps:
       - name: Get Code
         uses: actions/checkout@v4
